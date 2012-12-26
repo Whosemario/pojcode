@@ -4,12 +4,11 @@
 using namespace std;
 
 /* Segment Tree */
-#define SIZE 40000
+#define SIZE 80000
 int TreeLeft[SIZE];
 int TreeRight[SIZE];
-int TreeNum[SIZE];
-int TreeLeftCol[SIZE];
-int TreeRightCol[SIZE];
+int TreeCol[SIZE];
+int colors[10004];
 
 void buildTree(int k,int left,int right){
 	if(left == right){
@@ -26,29 +25,45 @@ void buildTree(int k,int left,int right){
 
 void insertSegment(int k,int left,int right,int col){
 	if(left<=TreeLeft[k]&&right>=TreeRight[k]){
-		TreeNum[k]=1;
-		TreeLeftCol[k]=col;
-		TreeRightCol[k]=col;
+		TreeCol[k]=col;
 	}
 	else{
+		//push children
+		if(TreeCol[k]>0){
+			TreeCol[k*2]=TreeCol[k*2+1]=TreeCol[k];
+		}
 		int mid = (TreeLeft[k]+TreeRight[k])/2;
 		if(left<=mid)
 			insertSegment(k*2,left,right,col);
 		if(right>mid)
 			insertSegment(k*2+1,left,right,col);
-		if(TreeRightCol[k*2]==TreeLeftCol[k*2+1] && TreeRightCol[k*2]!=0)
-			TreeNum[k]=TreeNum[k*2]+TreeNum[k*2+1]-1;
+		int a = TreeCol[k*2];
+		int b = TreeCol[k*2+1];
+		if(a!=b)
+			TreeCol[k]=0;
 		else
-			TreeNum[k]=TreeNum[k*2]+TreeNum[k*2+1];
-		TreeLeftCol[k] = TreeLeftCol[k*2];
-		TreeRightCol[k] = TreeRightCol[k*2+1];
+			TreeCol[k]=a;
+		
 	}
 }
 
 void clearTree(){
-	memset(TreeLeftCol,0,sizeof(TreeLeftCol));
-	memset(TreeRightCol,0,sizeof(TreeRightCol));
-	memset(TreeNum,0,sizeof(TreeNum));
+	memset(TreeCol,0,sizeof(TreeCol));
+}
+
+void search(int k){
+	if(TreeLeft[k]==TreeRight[k]){
+		if(TreeCol[k]) colors[TreeCol[k]]=1;
+	}
+	else{
+		if(TreeCol[k]){
+			colors[TreeCol[k]]=1;
+		}
+		else{
+			search(k*2);
+			search(k*2+1);
+		}
+	}
 }
 
 /****************/
@@ -102,6 +117,13 @@ int main()
 			insertSegment(1,l,r,i+1);
 		}
 
-		printf("%d\n",TreeNum[1]);
+		memset(colors,0,sizeof(colors));
+		search(1);
+
+		int res = 0;
+		for(int i=1;i<=N;i++)
+			if(colors[i]) res++;
+
+		printf("%d\n",res);
 	}
 }

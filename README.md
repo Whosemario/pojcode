@@ -3,7 +3,7 @@ pojcode
 I just use this project to store my codes that are my solutions on problems of poj.org. 
 
 [3368]
-==================
+-----------------------
 这道题是一个很常见的问题，有两种解法，线段树和RMQ
 
 先说一下线段树的解法：树的每一个节点记录一下几个状态：此节点区间的最高频率，左端点的值，左端点的值得延伸长度，右端点的值，和端点的值得延伸长度，
